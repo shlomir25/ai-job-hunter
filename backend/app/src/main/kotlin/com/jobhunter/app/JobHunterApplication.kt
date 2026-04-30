@@ -16,6 +16,7 @@ import org.springframework.retry.annotation.EnableRetry
 @EnableScheduling
 @EnableAsync
 @EnableRetry
+@org.springframework.boot.context.properties.ConfigurationPropertiesScan("com.jobhunter")
 class JobHunterApplication
 
 fun main(args: Array<String>) {
