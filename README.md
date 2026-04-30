@@ -9,8 +9,9 @@ See [`docs/superpowers/specs/2026-04-30-ai-job-hunter-design.md`](docs/superpowe
 ```
 ai-job-hunter/
 ├── backend/
-│   ├── core/    # shared domain, queue framework, LLM and embedding clients
-│   └── app/     # @SpringBootApplication, REST endpoints, health, scheduling
+│   ├── core/         # shared domain, queue framework, LLM and embedding clients
+│   ├── ingestion/    # IMAP source + alert-email parsers (LinkedIn / Indeed / Glassdoor)
+│   └── app/          # @SpringBootApplication, REST endpoints, health, scheduling
 ├── docker-compose.yml
 └── docs/superpowers/{specs,plans}/
 ```
@@ -23,8 +24,17 @@ ai-job-hunter/
    docker exec jobhunter-ollama ollama pull bge-m3
    docker exec jobhunter-ollama ollama pull aya-expanse:32b
    ```
-3. **Run app:** Open in IntelliJ; run `JobHunterApplication.kt`. Or from CLI: `./gradlew :backend:app:bootRun`.
+3. **Run app:** Open in IntelliJ; run `JobHunterApplication.kt`. Or from CLI: `./gradlew :app:bootRun`.
 4. **Verify:** `curl http://localhost:8080/actuator/health`
+
+## Setting up IMAP (Gmail)
+
+1. Enable 2FA on your Gmail account.
+2. Generate a Google App Password: https://myaccount.google.com/apppasswords
+3. Copy `backend/app/src/main/resources/application-local.yml.example` to `application-local.yml` (it's gitignored).
+4. Fill in `jobhunter.imap.username` (your Gmail) and `jobhunter.imap.password` (the app password).
+5. Apply Gmail filters/labels so your job-alert emails stay in INBOX (we filter by sender domain, e.g. `@linkedin.com`).
+6. The scheduler runs every 15 minutes. Trigger immediately with `curl -X POST "http://localhost:8080/api/admin/ingestion/run-now?source=IMAP_LINKEDIN_ALERTS"`.
 
 ## Tests
 
