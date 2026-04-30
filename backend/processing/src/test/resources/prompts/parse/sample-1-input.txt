@@ -1,0 +1,13 @@
+Backend Engineer (Kotlin)
+Acme Robotics · Tel Aviv, Israel · Hybrid
+
+About the role:
+We're looking for a backend engineer with 5+ years of experience in Kotlin and Spring Boot. You'll work on our microservices platform and own performance-critical paths.
+
+Requirements:
+- 5+ years backend experience
+- Kotlin or Java expertise
+- Postgres and SQL fluency
+- Hebrew/English
+
+Apply: send your CV to jobs@acme-robotics.com

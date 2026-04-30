@@ -1,0 +1,12 @@
+{
+  "title": "Backend Engineer (Kotlin)",
+  "company": "Acme Robotics",
+  "location": "Tel Aviv, Israel",
+  "isRemote": false,
+  "language": "en",
+  "description": "Backend engineer working on microservices platform.",
+  "requirements": "5+ years backend, Kotlin/Java, Postgres, Hebrew/English",
+  "salaryText": null,
+  "applyUrl": null,
+  "contactEmail": "jobs@acme-robotics.com"
+}
