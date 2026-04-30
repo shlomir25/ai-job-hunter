@@ -3,26 +3,26 @@ package com.jobhunter.processing.client
 import com.jobhunter.core.client.LlmClient
 
 class RecordingLlmClient : LlmClient {
-    private val responses = mutableMapOf<String, String>()
-    val callLog: MutableList<Pair<String, String>> = mutableListOf()
+  private val responses = mutableMapOf<String, String>()
+  val callLog: MutableList<Pair<String, String>> = mutableListOf()
 
-    fun record(system: String, user: String, response: String) {
-        responses[key(system, user)] = response
-    }
+  fun record(system: String, user: String, response: String) {
+    responses[key(system, user)] = response
+  }
 
-    /** Match purely by user content (system prompt is fixed for a given prompt class). */
-    fun recordByUser(user: String, response: String) {
-        responses["USER::$user"] = response
-    }
+  /** Match purely by user content (system prompt is fixed for a given prompt class). */
+  fun recordByUser(user: String, response: String) {
+    responses["USER::$user"] = response
+  }
 
-    override fun chat(system: String, user: String): String {
-        callLog += system to user
-        return responses[key(system, user)]
-            ?: responses["USER::$user"]
-            ?: error("No recorded response for user prompt:\n$user")
-    }
+  override fun chat(system: String, user: String): String {
+    callLog += system to user
+    return responses[key(system, user)]
+      ?: responses["USER::$user"]
+      ?: error("No recorded response for user prompt:\n$user")
+  }
 
-    override fun chatStructured(system: String, user: String): String = chat(system, user)
+  override fun chatStructured(system: String, user: String): String = chat(system, user)
 
-    private fun key(system: String, user: String) = "${system.hashCode()}::${user.hashCode()}"
+  private fun key(system: String, user: String) = "${system.hashCode()}::${user.hashCode()}"
 }

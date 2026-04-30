@@ -2,8 +2,15 @@ package com.jobhunter.processing.worker
 
 import com.jobhunter.core.AbstractRepositoryTest
 import com.jobhunter.core.client.EmbeddingClient
-import com.jobhunter.core.domain.*
-import com.jobhunter.core.repository.*
+import com.jobhunter.core.domain.JobPosting
+import com.jobhunter.core.domain.JobSource
+import com.jobhunter.core.domain.ProcessingQueueRow
+import com.jobhunter.core.domain.QueueState
+import com.jobhunter.core.domain.SourceType
+import com.jobhunter.core.repository.JobPostingRepository
+import com.jobhunter.core.repository.JobSourceRepository
+import com.jobhunter.core.repository.PostingEmbeddingRepository
+import com.jobhunter.core.repository.ProcessingQueueRepository
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -14,29 +21,38 @@ import kotlin.test.assertEquals
 
 class EmbedWorkerTest : AbstractRepositoryTest() {
 
-    @Autowired lateinit var sources: JobSourceRepository
-    @Autowired lateinit var postings: JobPostingRepository
-    @Autowired lateinit var queue: ProcessingQueueRepository
-    @Autowired lateinit var embeddings: PostingEmbeddingRepository
-    @Autowired lateinit var txManager: PlatformTransactionManager
+  @Autowired lateinit var sources: JobSourceRepository
 
-    @Test
-    fun `embeds CLASSIFIED row, advances to EMBEDDED`() {
-        val src = sources.save(JobSource("S", SourceType.IMAP, true, "{}"))
-        val post = postings.save(JobPosting(
-            sourceId = src.id!!, externalId = "E", rawText = "raw text", capturedAt = Instant.now(),
-        ))
-        val queueRow = queue.save(ProcessingQueueRow(jobPostingId = post.id!!, state = QueueState.CLASSIFIED))
+  @Autowired lateinit var postings: JobPostingRepository
 
-        val embeddingClient = mockk<EmbeddingClient>()
-        every { embeddingClient.embed("raw text") } returns FloatArray(1024) { 0.5f }
+  @Autowired lateinit var queue: ProcessingQueueRepository
 
-        val worker = EmbedWorker(queue, postings, embeddings, txManager, embeddingClient)
-        worker.runOnce()
+  @Autowired lateinit var embeddings: PostingEmbeddingRepository
 
-        assertEquals(QueueState.EMBEDDED, queue.findById(queueRow.id!!).get().state)
-        val emb = embeddings.findById(post.id!!).get()
-        assertEquals(1024, emb.embedding.size)
-        assertEquals("bge-m3", emb.modelName)
-    }
+  @Autowired lateinit var txManager: PlatformTransactionManager
+
+  @Test
+  fun `embeds CLASSIFIED row, advances to EMBEDDED`() {
+    val src = sources.save(JobSource("S", SourceType.IMAP, true, "{}"))
+    val post = postings.save(
+      JobPosting(
+        sourceId = src.id!!,
+        externalId = "E",
+        rawText = "raw text",
+        capturedAt = Instant.now(),
+      ),
+    )
+    val queueRow = queue.save(ProcessingQueueRow(jobPostingId = post.id!!, state = QueueState.CLASSIFIED))
+
+    val embeddingClient = mockk<EmbeddingClient>()
+    every { embeddingClient.embed("raw text") } returns FloatArray(1024) { 0.5f }
+
+    val worker = EmbedWorker(queue, postings, embeddings, txManager, embeddingClient)
+    worker.runOnce()
+
+    assertEquals(QueueState.EMBEDDED, queue.findById(queueRow.id!!).get().state)
+    val emb = embeddings.findById(post.id!!).get()
+    assertEquals(1024, emb.embedding.size)
+    assertEquals("bge-m3", emb.modelName)
+  }
 }

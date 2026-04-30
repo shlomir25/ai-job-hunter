@@ -13,20 +13,20 @@ import java.time.Instant
 @RequestMapping("/api/admin/queue")
 class AdminQueueController(private val queue: ProcessingQueueRepository) {
 
-    @GetMapping("/counts")
-    fun counts(): Map<String, Long> =
-        QueueState.entries.associate { it.name to queue.countByState(it) }
+  @GetMapping("/counts")
+  fun counts(): Map<String, Long> =
+    QueueState.entries.associate { it.name to queue.countByState(it) }
 
-    @PostMapping("/{id}/requeue")
-    fun requeue(@PathVariable id: Long) {
-        val row = queue.findById(id).orElseThrow {
-            IllegalArgumentException("Queue row $id not found")
-        }
-        row.state = QueueState.INGESTED   // re-enter pipeline at the start
-        row.attempts = 0
-        row.lastError = null
-        row.nextAttemptAt = null
-        row.updatedAt = Instant.now()
-        queue.save(row)
+  @PostMapping("/{id}/requeue")
+  fun requeue(@PathVariable id: Long) {
+    val row = queue.findById(id).orElseThrow {
+      IllegalArgumentException("Queue row $id not found")
     }
+    row.state = QueueState.INGESTED // re-enter pipeline at the start
+    row.attempts = 0
+    row.lastError = null
+    row.nextAttemptAt = null
+    row.updatedAt = Instant.now()
+    queue.save(row)
+  }
 }

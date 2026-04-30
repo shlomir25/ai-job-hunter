@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface JobSourceRepository : JpaRepository<JobSource, Long> {
-    fun findByCode(code: String): JobSource?
-    fun findByEnabledTrue(): List<JobSource>
+  fun findByCode(code: String): JobSource?
+  fun findByEnabledTrue(): List<JobSource>
 }

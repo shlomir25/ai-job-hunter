@@ -6,7 +6,7 @@ import javax.sql.DataSource
 
 @Configuration
 class QueueListenerConfig {
-    @Bean
-    fun postgresQueueListener(dataSource: DataSource, scheduler: WorkerScheduler): PostgresQueueListener =
-        PostgresQueueListener(dataSource, onNotify = { scheduler.tick() })
+  @Bean
+  fun postgresQueueListener(dataSource: DataSource, scheduler: WorkerScheduler): PostgresQueueListener =
+    PostgresQueueListener(dataSource, onNotify = { scheduler.tick() })
 }

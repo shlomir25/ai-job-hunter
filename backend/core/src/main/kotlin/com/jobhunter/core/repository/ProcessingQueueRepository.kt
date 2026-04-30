@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProcessingQueueRepository : JpaRepository<ProcessingQueueRow, Long> {
 
-    @Query(
-        value = """
+  @Query(
+    value = """
             SELECT * FROM processing_queue
             WHERE state = :state
               AND (next_attempt_at IS NULL OR next_attempt_at <= now())
@@ -19,10 +19,10 @@ interface ProcessingQueueRepository : JpaRepository<ProcessingQueueRow, Long> {
             LIMIT :batch
             FOR UPDATE SKIP LOCKED
         """,
-        nativeQuery = true,
-    )
-    fun claimNext(@Param("state") state: String, @Param("batch") batch: Int): List<ProcessingQueueRow>
+    nativeQuery = true,
+  )
+  fun claimNext(@Param("state") state: String, @Param("batch") batch: Int): List<ProcessingQueueRow>
 
-    fun findByState(state: QueueState): List<ProcessingQueueRow>
-    fun countByState(state: QueueState): Long
+  fun findByState(state: QueueState): List<ProcessingQueueRow>
+  fun countByState(state: QueueState): Long
 }

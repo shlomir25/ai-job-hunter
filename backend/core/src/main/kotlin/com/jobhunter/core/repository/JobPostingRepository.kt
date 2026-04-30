@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface JobPostingRepository : JpaRepository<JobPosting, Long> {
-    fun findBySourceIdAndExternalId(sourceId: Long, externalId: String): JobPosting?
+  fun findBySourceIdAndExternalId(sourceId: Long, externalId: String): JobPosting?
 }

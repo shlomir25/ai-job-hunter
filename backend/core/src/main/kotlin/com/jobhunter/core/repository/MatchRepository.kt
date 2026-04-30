@@ -8,12 +8,14 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface MatchRepository : JpaRepository<Match, Long> {
-    fun findByState(state: MatchState): List<Match>
+  fun findByState(state: MatchState): List<Match>
 
-    @Query("""
+  @Query(
+    """
         SELECT m FROM Match m
         WHERE m.state = com.jobhunter.core.domain.MatchState.READY_FOR_REVIEW
         ORDER BY m.llmScore DESC NULLS LAST, m.id ASC
-    """)
-    fun findReadyForReview(): List<Match>
+    """,
+  )
+  fun findReadyForReview(): List<Match>
 }

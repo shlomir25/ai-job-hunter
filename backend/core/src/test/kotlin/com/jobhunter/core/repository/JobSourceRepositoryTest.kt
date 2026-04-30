@@ -9,34 +9,34 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class JobSourceRepositoryTest : AbstractRepositoryTest() {
-    @Autowired lateinit var repository: JobSourceRepository
+  @Autowired lateinit var repository: JobSourceRepository
 
-    @Test
-    fun `saves and retrieves a job source with JSONB config`() {
-        val source = JobSource(
-            code = "IMAP_LINKEDIN",
-            type = SourceType.IMAP,
-            enabled = true,
-            config = """{"folder":"INBOX","from":"jobs-noreply@linkedin.com"}""",
-        )
-        val saved = repository.save(source)
-        assertNotNull(saved.id)
+  @Test
+  fun `saves and retrieves a job source with JSONB config`() {
+    val source = JobSource(
+      code = "IMAP_LINKEDIN",
+      type = SourceType.IMAP,
+      enabled = true,
+      config = """{"folder":"INBOX","from":"jobs-noreply@linkedin.com"}""",
+    )
+    val saved = repository.save(source)
+    assertNotNull(saved.id)
 
-        val found = repository.findByCode("IMAP_LINKEDIN")
-        assertNotNull(found)
-        assertEquals(SourceType.IMAP, found.type)
-        assertEquals(true, found.enabled)
+    val found = repository.findByCode("IMAP_LINKEDIN")
+    assertNotNull(found)
+    assertEquals(SourceType.IMAP, found.type)
+    assertEquals(true, found.enabled)
+  }
+
+  @Test
+  fun `code is unique`() {
+    repository.save(JobSource("UNIQ", SourceType.SCRAPER, true, "{}"))
+    val duplicate = JobSource("UNIQ", SourceType.SCRAPER, true, "{}")
+    try {
+      repository.saveAndFlush(duplicate)
+      error("expected DataIntegrityViolationException")
+    } catch (_: org.springframework.dao.DataIntegrityViolationException) {
+      // expected
     }
-
-    @Test
-    fun `code is unique`() {
-        repository.save(JobSource("UNIQ", SourceType.SCRAPER, true, "{}"))
-        val duplicate = JobSource("UNIQ", SourceType.SCRAPER, true, "{}")
-        try {
-            repository.saveAndFlush(duplicate)
-            error("expected DataIntegrityViolationException")
-        } catch (_: org.springframework.dao.DataIntegrityViolationException) {
-            // expected
-        }
-    }
+  }
 }

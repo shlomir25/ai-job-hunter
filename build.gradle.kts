@@ -4,6 +4,7 @@ plugins {
     kotlin("plugin.jpa") version "2.0.21" apply false
     id("org.springframework.boot") version "3.4.1" apply false
     id("io.spring.dependency-management") version "1.1.7" apply false
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.2" apply false
 }
 
 allprojects {
@@ -13,6 +14,8 @@ allprojects {
 }
 
 subprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)

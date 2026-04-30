@@ -11,15 +11,17 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/admin/ingestion")
 class AdminIngestionController(
-    private val service: IngestionService,
-    private val props: IngestionProperties,
+  private val service: IngestionService,
+  private val props: IngestionProperties,
 ) {
-    @PostMapping("/run-now")
-    fun runNow(@RequestParam source: String): IngestionRunResult =
-        service.runSource(
-            sourceCode = source,
-            host = props.host, port = props.port,
-            username = props.username, password = props.password,
-            maxMessages = props.maxMessagesPerRun,
-        )
+  @PostMapping("/run-now")
+  fun runNow(@RequestParam source: String): IngestionRunResult =
+    service.runSource(
+      sourceCode = source,
+      host = props.host,
+      port = props.port,
+      username = props.username,
+      password = props.password,
+      maxMessages = props.maxMessagesPerRun,
+    )
 }

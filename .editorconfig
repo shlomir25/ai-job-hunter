@@ -1,0 +1,34 @@
+# EditorConfig is awesome: https://EditorConfig.org
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+end_of_line = lf
+insert_final_newline = true
+
+[*.{java,xml}]
+indent_size = 4
+max_line_length = 150
+ij_java_continuation_indent_size = 4
+ij_java_class_count_to_use_import_on_demand = 999
+ij_java_names_count_to_use_import_on_demand = 999
+ij_java_packages_to_use_import_on_demand = 9999
+ij_java_imports_layout = *,java.**,javax.**,kotlin.**,kotlinx.**,^
+
+[*.{kt,kts}]
+ktlint_code_style = intellij_idea
+ktlint_standard_function-expression-body = disabled
+ktlint_standard_function-signature = disabled
+ktlint_standard_class-signature = disabled
+ij_kotlin_name_count_to_use_star_import = 999
+ij_kotlin_name_count_to_use_star_import_for_members = 999
+ij_kotlin_packages_to_use_import_on_demand = 999
+ij_kotlin_imports_layout = *,java.**,javax.**,kotlin.**,kotlinx.**,^
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+
+[**/test/**.kt]
+ktlint_ignore_back_ticked_identifier = true

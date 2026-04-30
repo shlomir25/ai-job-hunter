@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface EmailSendRecordRepository : JpaRepository<EmailSendRecord, Long> {
-    fun findByMatchId(matchId: Long): EmailSendRecord?
+  fun findByMatchId(matchId: Long): EmailSendRecord?
 }

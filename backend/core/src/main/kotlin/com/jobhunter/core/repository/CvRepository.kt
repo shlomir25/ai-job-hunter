@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CvRepository : JpaRepository<Cv, Long> {
-    @Query("SELECT c FROM Cv c WHERE c.isActive = true")
-    fun findActive(): Cv?
+  @Query("SELECT c FROM Cv c WHERE c.isActive = true")
+  fun findActive(): Cv?
 }

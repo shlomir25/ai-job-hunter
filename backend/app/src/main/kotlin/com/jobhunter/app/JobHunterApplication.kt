@@ -5,9 +5,9 @@ import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.retry.annotation.EnableRetry
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.EnableScheduling
-import org.springframework.retry.annotation.EnableRetry
 
 @SpringBootApplication
 @ComponentScan(basePackages = ["com.jobhunter"])
@@ -20,5 +20,5 @@ import org.springframework.retry.annotation.EnableRetry
 class JobHunterApplication
 
 fun main(args: Array<String>) {
-    runApplication<JobHunterApplication>(*args)
+  runApplication<JobHunterApplication>(*args)
 }

@@ -13,22 +13,24 @@ private val log = KotlinLogging.logger {}
 @Component
 class SourceConfigSeeder(private val sources: JobSourceRepository) : ApplicationRunner {
 
-    override fun run(args: ApplicationArguments?) {
-        val seeds = listOf(
-            "IMAP_LINKEDIN_ALERTS"  to """{"fromFilter":"@linkedin.com","folder":"INBOX"}""",
-            "IMAP_INDEED_ALERTS"    to """{"fromFilter":"@indeed.com","folder":"INBOX"}""",
-            "IMAP_GLASSDOOR_ALERTS" to """{"fromFilter":"@glassdoor.com","folder":"INBOX"}""",
+  override fun run(args: ApplicationArguments?) {
+    val seeds = listOf(
+      "IMAP_LINKEDIN_ALERTS" to """{"fromFilter":"@linkedin.com","folder":"INBOX"}""",
+      "IMAP_INDEED_ALERTS" to """{"fromFilter":"@indeed.com","folder":"INBOX"}""",
+      "IMAP_GLASSDOOR_ALERTS" to """{"fromFilter":"@glassdoor.com","folder":"INBOX"}""",
+    )
+    for ((code, config) in seeds) {
+      if (sources.findByCode(code) == null) {
+        sources.save(
+          JobSource(
+            code = code,
+            type = SourceType.IMAP,
+            enabled = true,
+            config = config,
+          ),
         )
-        for ((code, config) in seeds) {
-            if (sources.findByCode(code) == null) {
-                sources.save(JobSource(
-                    code = code,
-                    type = SourceType.IMAP,
-                    enabled = true,
-                    config = config,
-                ))
-                log.info { "Seeded JobSource $code" }
-            }
-        }
+        log.info { "Seeded JobSource $code" }
+      }
     }
+  }
 }

@@ -9,20 +9,20 @@ import kotlin.test.assertEquals
 
 class OllamaHealthIndicatorTest {
 
-    @Test
-    fun `UP when llm responds`() {
-        val llm = mockk<LlmClient>()
-        every { llm.chat(any(), any()) } returns "ok"
-        val health = OllamaHealthIndicator(llm).health()
-        assertEquals(Status.UP, health.status)
-    }
+  @Test
+  fun `UP when llm responds`() {
+    val llm = mockk<LlmClient>()
+    every { llm.chat(any(), any()) } returns "ok"
+    val health = OllamaHealthIndicator(llm).health()
+    assertEquals(Status.UP, health.status)
+  }
 
-    @Test
-    fun `DOWN when llm throws`() {
-        val llm = mockk<LlmClient>()
-        every { llm.chat(any(), any()) } throws RuntimeException("connection refused")
-        val health = OllamaHealthIndicator(llm).health()
-        assertEquals(Status.DOWN, health.status)
-        assertEquals("connection refused", health.details["error"])
-    }
+  @Test
+  fun `DOWN when llm throws`() {
+    val llm = mockk<LlmClient>()
+    every { llm.chat(any(), any()) } throws RuntimeException("connection refused")
+    val health = OllamaHealthIndicator(llm).health()
+    assertEquals(Status.DOWN, health.status)
+    assertEquals("connection refused", health.details["error"])
+  }
 }

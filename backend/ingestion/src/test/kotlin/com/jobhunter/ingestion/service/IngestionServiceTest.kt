@@ -32,58 +32,71 @@ import kotlin.test.assertNotNull
 @ContextConfiguration(classes = [IngestionServiceTest.TestBeans::class])
 class IngestionServiceTest : AbstractRepositoryTest() {
 
-    companion object {
-        @RegisterExtension
-        @JvmStatic
-        val greenMail = GreenMailExtension(ServerSetupTest.SMTP_IMAP)
-    }
+  companion object {
+    @RegisterExtension
+    @JvmStatic
+    val greenMail = GreenMailExtension(ServerSetupTest.SMTP_IMAP)
+  }
 
-    @TestConfiguration
-    class TestBeans {
-        @Bean fun objectMapper() = ObjectMapper()
-        @Bean fun imapClient() = JakartaMailImapClient()
-        @Bean fun linkedinParser() = LinkedInAlertParser()
-        @Bean fun indeedParser() = IndeedAlertParser()
-        @Bean fun glassdoorParser() = GlassdoorAlertParser()
-        @Bean fun registry(parsers: List<com.jobhunter.ingestion.parser.EmailParser>) = EmailParserRegistry(parsers)
-        @Bean fun queueNotifier(jdbc: JdbcTemplate) = QueueNotifier(jdbc)
-        @Bean fun ingestionService(
-            sources: JobSourceRepository,
-            postings: JobPostingRepository,
-            queue: ProcessingQueueRepository,
-            client: JakartaMailImapClient,
-            registry: EmailParserRegistry,
-            notifier: QueueNotifier,
-            mapper: ObjectMapper,
-        ) = IngestionService(sources, postings, queue, client, registry, notifier, mapper)
-    }
+  @TestConfiguration
+  class TestBeans {
+    @Bean fun objectMapper() = ObjectMapper()
 
-    @Autowired lateinit var sources: JobSourceRepository
-    @Autowired lateinit var postings: JobPostingRepository
-    @Autowired lateinit var queue: ProcessingQueueRepository
-    @Autowired lateinit var ingestionService: IngestionService
+    @Bean fun imapClient() = JakartaMailImapClient()
 
-    private fun setupUser(): GreenMailUser =
-        greenMail.setUser("user@localhost", "user", "secret")
+    @Bean fun linkedinParser() = LinkedInAlertParser()
 
-    private fun deliverHtml(mailbox: GreenMailUser, from: String, html: String) {
-        val session = GreenMailUtil.getSession(ServerSetupTest.SMTP)
-        val msg = MimeMessage(session)
-        msg.setFrom(InternetAddress(from))
-        msg.setRecipients(Message.RecipientType.TO, "user@localhost")
-        msg.subject = "Job alerts"
-        msg.setContent(html, "text/html; charset=UTF-8")
-        mailbox.deliver(msg)
-    }
+    @Bean fun indeedParser() = IndeedAlertParser()
 
-    @Test
-    fun `ingests linkedin alert email and creates posting plus queue row`() {
-        // 1) Seed the IMAP sources
-        SourceConfigSeeder(sources).run(null)
+    @Bean fun glassdoorParser() = GlassdoorAlertParser()
 
-        // 2) Deliver a LinkedIn-shaped email to GreenMail
-        val mailbox = setupUser()
-        deliverHtml(mailbox, "jobs-noreply@linkedin.com", """
+    @Bean fun registry(parsers: List<com.jobhunter.ingestion.parser.EmailParser>) = EmailParserRegistry(parsers)
+
+    @Bean fun queueNotifier(jdbc: JdbcTemplate) = QueueNotifier(jdbc)
+
+    @Bean fun ingestionService(
+      sources: JobSourceRepository,
+      postings: JobPostingRepository,
+      queue: ProcessingQueueRepository,
+      client: JakartaMailImapClient,
+      registry: EmailParserRegistry,
+      notifier: QueueNotifier,
+      mapper: ObjectMapper,
+    ) = IngestionService(sources, postings, queue, client, registry, notifier, mapper)
+  }
+
+  @Autowired lateinit var sources: JobSourceRepository
+
+  @Autowired lateinit var postings: JobPostingRepository
+
+  @Autowired lateinit var queue: ProcessingQueueRepository
+
+  @Autowired lateinit var ingestionService: IngestionService
+
+  private fun setupUser(): GreenMailUser =
+    greenMail.setUser("user@localhost", "user", "secret")
+
+  private fun deliverHtml(mailbox: GreenMailUser, from: String, html: String) {
+    val session = GreenMailUtil.getSession(ServerSetupTest.SMTP)
+    val msg = MimeMessage(session)
+    msg.setFrom(InternetAddress(from))
+    msg.setRecipients(Message.RecipientType.TO, "user@localhost")
+    msg.subject = "Job alerts"
+    msg.setContent(html, "text/html; charset=UTF-8")
+    mailbox.deliver(msg)
+  }
+
+  @Test
+  fun `ingests linkedin alert email and creates posting plus queue row`() {
+    // 1) Seed the IMAP sources
+    SourceConfigSeeder(sources).run(null)
+
+    // 2) Deliver a LinkedIn-shaped email to GreenMail
+    val mailbox = setupUser()
+    deliverHtml(
+      mailbox,
+      "jobs-noreply@linkedin.com",
+      """
             <table>
               <tr class="job-card"><td>
                 <a href="https://www.linkedin.com/comm/jobs/view/12345/">Backend Engineer</a>
@@ -91,52 +104,67 @@ class IngestionServiceTest : AbstractRepositoryTest() {
                 <div class="location">Tel Aviv</div>
               </td></tr>
             </table>
-        """.trimIndent())
+      """.trimIndent(),
+    )
 
-        // 3) Run ingestion for the LinkedIn source
-        val result = ingestionService.runSource(
-            sourceCode = "IMAP_LINKEDIN_ALERTS",
-            host = ServerSetupTest.IMAP.bindAddress,
-            port = ServerSetupTest.IMAP.port,
-            username = "user",
-            password = "secret",
-            maxMessages = 50,
-        )
+    // 3) Run ingestion for the LinkedIn source
+    val result = ingestionService.runSource(
+      sourceCode = "IMAP_LINKEDIN_ALERTS",
+      host = ServerSetupTest.IMAP.bindAddress,
+      port = ServerSetupTest.IMAP.port,
+      username = "user",
+      password = "secret",
+      maxMessages = 50,
+    )
 
-        assertEquals(1, result.postingsCreated)
-        assertEquals(1, postings.count().toInt())
-        val saved = postings.findAll().first()
-        assertEquals("12345", saved.externalId)
+    assertEquals(1, result.postingsCreated)
+    assertEquals(1, postings.count().toInt())
+    val saved = postings.findAll().first()
+    assertEquals("12345", saved.externalId)
 
-        // 4) processing_queue row in INGESTED state
-        val rows = queue.findByState(QueueState.INGESTED)
-        assertEquals(1, rows.size)
-        assertEquals(saved.id, rows[0].jobPostingId)
+    // 4) processing_queue row in INGESTED state
+    val rows = queue.findByState(QueueState.INGESTED)
+    assertEquals(1, rows.size)
+    assertEquals(saved.id, rows[0].jobPostingId)
 
-        // 5) source health updated
-        val src = sources.findByCode("IMAP_LINKEDIN_ALERTS")!!
-        assertEquals("OK", src.lastRunStatus)
-        assertNotNull(src.lastRunAt)
-    }
+    // 5) source health updated
+    val src = sources.findByCode("IMAP_LINKEDIN_ALERTS")!!
+    assertEquals("OK", src.lastRunStatus)
+    assertNotNull(src.lastRunAt)
+  }
 
-    @Test
-    fun `re-running same email does not duplicate posting`() {
-        SourceConfigSeeder(sources).run(null)
-        val mailbox = setupUser()
-        deliverHtml(mailbox, "jobs-noreply@linkedin.com", """
+  @Test
+  fun `re-running same email does not duplicate posting`() {
+    SourceConfigSeeder(sources).run(null)
+    val mailbox = setupUser()
+    deliverHtml(
+      mailbox,
+      "jobs-noreply@linkedin.com",
+      """
             <table><tr class="job-card"><td>
                 <a href="https://www.linkedin.com/comm/jobs/view/77777/">x</a>
                 <div class="company">y</div></td></tr></table>
-        """.trimIndent())
+      """.trimIndent(),
+    )
 
-        ingestionService.runSource("IMAP_LINKEDIN_ALERTS",
-            ServerSetupTest.IMAP.bindAddress, ServerSetupTest.IMAP.port,
-            "user", "secret", 50)
-        ingestionService.runSource("IMAP_LINKEDIN_ALERTS",
-            ServerSetupTest.IMAP.bindAddress, ServerSetupTest.IMAP.port,
-            "user", "secret", 50)
+    ingestionService.runSource(
+      "IMAP_LINKEDIN_ALERTS",
+      ServerSetupTest.IMAP.bindAddress,
+      ServerSetupTest.IMAP.port,
+      "user",
+      "secret",
+      50,
+    )
+    ingestionService.runSource(
+      "IMAP_LINKEDIN_ALERTS",
+      ServerSetupTest.IMAP.bindAddress,
+      ServerSetupTest.IMAP.port,
+      "user",
+      "secret",
+      50,
+    )
 
-        assertEquals(1L, postings.count())
-        assertEquals(1L, queue.count())
-    }
+    assertEquals(1L, postings.count())
+    assertEquals(1L, queue.count())
+  }
 }

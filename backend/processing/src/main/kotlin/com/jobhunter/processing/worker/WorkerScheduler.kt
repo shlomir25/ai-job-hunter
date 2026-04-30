@@ -8,22 +8,22 @@ private val log = KotlinLogging.logger {}
 
 @Component
 class WorkerScheduler(
-    private val parseWorker: ParseWorker,
-    private val classifyWorker: ClassifyWorker,
-    private val embedWorker: EmbedWorker,
+  private val parseWorker: ParseWorker,
+  private val classifyWorker: ClassifyWorker,
+  private val embedWorker: EmbedWorker,
 ) {
-    @Scheduled(fixedDelay = 60_000, initialDelay = 10_000)
-    fun tick() {
-        runSafe("parse")    { parseWorker.runOnce() }
-        runSafe("classify") { classifyWorker.runOnce() }
-        runSafe("embed")    { embedWorker.runOnce() }
-    }
+  @Scheduled(fixedDelay = 60_000, initialDelay = 10_000)
+  fun tick() {
+    runSafe("parse") { parseWorker.runOnce() }
+    runSafe("classify") { classifyWorker.runOnce() }
+    runSafe("embed") { embedWorker.runOnce() }
+  }
 
-    private inline fun runSafe(name: String, block: () -> Unit) {
-        try {
-            block()
-        } catch (e: Exception) {
-            log.warn(e) { "Worker '$name' tick failed" }
-        }
+  private inline fun runSafe(name: String, block: () -> Unit) {
+    try {
+      block()
+    } catch (e: Exception) {
+      log.warn(e) { "Worker '$name' tick failed" }
     }
+  }
 }

@@ -15,22 +15,22 @@ import org.testcontainers.containers.PostgreSQLContainer
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 abstract class AbstractRepositoryTest {
-    companion object {
-        @JvmStatic
-        val postgres: PostgreSQLContainer<*> = PostgreSQLContainer("pgvector/pgvector:pg16")
-            .withDatabaseName("jobhunter")
-            .withUsername("jobhunter")
-            .withPassword("jobhunter")
-            .also { it.start() }   // started once on class init; JVM shutdown reaps it
+  companion object {
+    @JvmStatic
+    val postgres: PostgreSQLContainer<*> = PostgreSQLContainer("pgvector/pgvector:pg16")
+      .withDatabaseName("jobhunter")
+      .withUsername("jobhunter")
+      .withPassword("jobhunter")
+      .also { it.start() } // started once on class init; JVM shutdown reaps it
 
-        @DynamicPropertySource
-        @JvmStatic
-        fun props(registry: DynamicPropertyRegistry) {
-            registry.add("spring.datasource.url") { postgres.jdbcUrl }
-            registry.add("spring.datasource.username") { postgres.username }
-            registry.add("spring.datasource.password") { postgres.password }
-            registry.add("spring.flyway.enabled") { "true" }
-            registry.add("spring.jpa.hibernate.ddl-auto") { "validate" }
-        }
+    @DynamicPropertySource
+    @JvmStatic
+    fun props(registry: DynamicPropertyRegistry) {
+      registry.add("spring.datasource.url") { postgres.jdbcUrl }
+      registry.add("spring.datasource.username") { postgres.username }
+      registry.add("spring.datasource.password") { postgres.password }
+      registry.add("spring.flyway.enabled") { "true" }
+      registry.add("spring.jpa.hibernate.ddl-auto") { "validate" }
     }
+  }
 }

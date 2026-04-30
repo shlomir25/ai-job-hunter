@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component
 
 @Component("ollama")
 class OllamaHealthIndicator(private val llm: LlmClient) : HealthIndicator {
-    override fun health(): Health = try {
-        llm.chat(system = "Reply with the single word OK.", user = "ping")
-        Health.up().build()
-    } catch (e: Exception) {
-        Health.down().withDetail("error", e.message ?: "unknown").build()
-    }
+  override fun health(): Health = try {
+    llm.chat(system = "Reply with the single word OK.", user = "ping")
+    Health.up().build()
+  } catch (e: Exception) {
+    Health.down().withDetail("error", e.message ?: "unknown").build()
+  }
 }
