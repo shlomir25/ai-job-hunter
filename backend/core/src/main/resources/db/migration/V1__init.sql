@@ -1,35 +1,9 @@
 -- Extensions
 CREATE EXTENSION IF NOT EXISTS vector;
 
--- Enums
-CREATE TYPE category AS ENUM (
-    'SOFTWARE_BACKEND',
-    'SOFTWARE_FULLSTACK',
-    'SOFTWARE_FRONTEND',
-    'DEVOPS',
-    'SRE',
-    'PLATFORM',
-    'DATA_ENGINEERING',
-    'DATA_SCIENCE',
-    'EMBEDDED',
-    'MOBILE',
-    'QA_AUTOMATION',
-    'SECURITY',
-    'PRODUCT_MANAGEMENT',
-    'DESIGN',
-    'HUMAN_RESOURCES',
-    'MARKETING',
-    'SALES',
-    'CUSTOMER_SUCCESS',
-    'FINANCE',
-    'LEGAL',
-    'OPERATIONS',
-    'ADMIN',
-    'CONSTRUCTION',
-    'HEALTHCARE',
-    'EDUCATION',
-    'OTHER'
-);
+-- Note: the Category enum lives in Kotlin (com.jobhunter.core.domain.Category).
+-- Postgres-side validation isn't worth the Hibernate friction with enum arrays;
+-- categories are stored as JSONB and validated at the service boundary.
 
 -- job_source
 CREATE TABLE job_source (
@@ -56,19 +30,19 @@ CREATE TABLE job_posting (
     company VARCHAR(255),
     location VARCHAR(255),
     is_remote BOOLEAN,
-    language CHAR(2),
+    language VARCHAR(2),
     contact_email VARCHAR(255),
     apply_url TEXT,
     description TEXT,
     requirements TEXT,
     salary_text VARCHAR(255),
-    categories category[],
+    categories JSONB NOT NULL DEFAULT '[]'::jsonb,
     posted_at TIMESTAMPTZ,
     captured_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (source_id, external_id)
 );
 
-CREATE INDEX idx_posting_categories ON job_posting USING GIN (categories);
+CREATE INDEX idx_posting_categories ON job_posting USING GIN (categories jsonb_path_ops);
 CREATE INDEX idx_posting_captured_at ON job_posting (captured_at DESC);
 CREATE INDEX idx_posting_contact_email ON job_posting (contact_email)
     WHERE contact_email IS NOT NULL;

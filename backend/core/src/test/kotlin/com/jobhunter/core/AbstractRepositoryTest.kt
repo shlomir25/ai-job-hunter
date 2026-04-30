@@ -5,21 +5,23 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 
+/**
+ * One Postgres container shared for the JVM lifetime of the test run.
+ * @Container + @Testcontainers would tie the lifecycle to a single test class
+ * and tear the container down between subclasses, breaking later contexts that
+ * Spring's test cache had bound to its (now-stopped) port.
+ */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
 abstract class AbstractRepositoryTest {
     companion object {
-        @Container
         @JvmStatic
         val postgres: PostgreSQLContainer<*> = PostgreSQLContainer("pgvector/pgvector:pg16")
             .withDatabaseName("jobhunter")
             .withUsername("jobhunter")
             .withPassword("jobhunter")
-            .withReuse(true)
+            .also { it.start() }   // started once on class init; JVM shutdown reaps it
 
         @DynamicPropertySource
         @JvmStatic
