@@ -11,6 +11,7 @@ ai-job-hunter/
 ├── backend/
 │   ├── core/         # shared domain, queue framework, LLM and embedding clients
 │   ├── ingestion/    # IMAP source + alert-email parsers (LinkedIn / Indeed / Glassdoor)
+│   ├── processing/   # parse / classify / embed workers; queue listener
 │   └── app/          # @SpringBootApplication, REST endpoints, health, scheduling
 ├── docker-compose.yml
 └── docs/superpowers/{specs,plans}/
