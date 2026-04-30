@@ -1,0 +1,11 @@
+.gradle/
+build/
+.idea/
+*.iml
+*.iws
+out/
+.DS_Store
+logs/
+*.log
+backend/app/src/main/resources/application-local.yml
+backend/*/build/
