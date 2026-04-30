@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: ai-job-hunter
+  profiles:
+    active: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/jobhunter
+    username: jobhunter
+    password: jobhunter
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc.lob.non_contextual_creation: true
+        format_sql: true
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: aya-expanse:32b
+          temperature: 0.2
+      embedding:
+        options:
+          model: bge-m3
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+
+jobhunter:
+  monitored-categories:
+    - SOFTWARE_BACKEND
+    - SOFTWARE_FULLSTACK
+    - DEVOPS
+    - SRE
+    - PLATFORM
+  matching:
+    cosine-threshold: 0.40
+    llm-score-threshold: 60
+
+logging:
+  level:
+    com.jobhunter: INFO
+    org.hibernate.SQL: WARN
