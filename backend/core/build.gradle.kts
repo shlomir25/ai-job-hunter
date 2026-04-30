@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
+    `java-test-fixtures`
     id("io.spring.dependency-management")
 }
 
@@ -32,6 +33,12 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.20.4")
     testImplementation("io.mockk:mockk:1.13.13")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+
+    // Shared test scaffolding (AbstractRepositoryTest, TestApplication) consumed by
+    // other modules via testImplementation(testFixtures(project(":core"))).
+    testFixturesImplementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    testFixturesImplementation("org.springframework.boot:spring-boot-starter-test")
+    testFixturesImplementation("org.testcontainers:postgresql:1.20.4")
 }
 
 kotlin { jvmToolchain(21) }
