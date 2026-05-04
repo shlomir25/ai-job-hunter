@@ -1,0 +1,7 @@
+Shlomi Rahimi
+Senior Backend Engineer
+7 years of experience in Kotlin, Java, Spring Boot.
+Past roles: Driivz (Senior Backend), Wix (Backend Engineer).
+Skills: Kotlin, Java, Spring Boot, Postgres, Kafka.
+Languages: Hebrew (native), English (fluent).
+M.Sc. Computer Science, Tel Aviv University.

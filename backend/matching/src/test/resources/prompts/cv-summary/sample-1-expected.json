@@ -1,0 +1,8 @@
+{
+  "skills": ["Kotlin","Java","Spring Boot","Postgres","Kafka"],
+  "yearsTotalExperience": 7,
+  "languages": ["Hebrew","English"],
+  "pastRoles": ["Senior Backend at Driivz","Backend Engineer at Wix"],
+  "education": "M.Sc. Computer Science, Tel Aviv University",
+  "highlights": "Senior backend engineer with 7 years in Kotlin and Spring Boot."
+}
