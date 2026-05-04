@@ -1,0 +1,5 @@
+Hello,
+
+I came across the Backend Engineer (Kotlin) role at Acme and wanted to reach out. My seven years of backend experience are squarely in your stack — Kotlin, Spring Boot, and Postgres are tools I work with daily. I've architected microservices platforms similar to what you describe, and I'd be happy to share specifics in a call.
+
+Looking forward to hearing from you.

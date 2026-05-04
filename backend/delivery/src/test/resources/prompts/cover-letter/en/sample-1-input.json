@@ -1,0 +1,8 @@
+{
+  "candidateName": "Shlomi Rahimi",
+  "cvSummaryJson": "{\"skills\":[\"Kotlin\",\"Spring Boot\",\"Postgres\"],\"yearsTotalExperience\":7}",
+  "postingTitle": "Backend Engineer (Kotlin)",
+  "postingCompany": "Acme",
+  "postingRequirements": "5+ years backend, Kotlin or Java, Postgres",
+  "matchStrengthsJson": "[\"Kotlin\",\"Postgres\"]"
+}
