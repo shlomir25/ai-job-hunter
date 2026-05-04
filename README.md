@@ -12,6 +12,7 @@ ai-job-hunter/
 │   ├── core/         # shared domain, queue framework, LLM and embedding clients
 │   ├── ingestion/    # IMAP source + alert-email parsers (LinkedIn / Indeed / Glassdoor)
 │   ├── processing/   # parse / classify / embed workers; queue listener
+│   ├── matching/     # CV upload, structured summary, two-stage matching worker
 │   └── app/          # @SpringBootApplication, REST endpoints, health, scheduling
 ├── docker-compose.yml
 └── docs/superpowers/{specs,plans}/
@@ -36,6 +37,14 @@ ai-job-hunter/
 4. Fill in `jobhunter.imap.username` (your Gmail) and `jobhunter.imap.password` (the app password).
 5. Apply Gmail filters/labels so your job-alert emails stay in INBOX (we filter by sender domain, e.g. `@linkedin.com`).
 6. The scheduler runs every 15 minutes. Trigger immediately with `curl -X POST "http://localhost:8080/api/admin/ingestion/run-now?source=IMAP_LINKEDIN_ALERTS"`.
+
+## Uploading your CV
+
+```bash
+curl -X POST -F "file=@cv.pdf" -F "label=default" http://localhost:8080/api/cv
+```
+
+The first upload becomes the active CV. Each subsequent upload deactivates the previous active CV (history is preserved). Once an active CV exists, the `MatchWorker` will score `EMBEDDED` postings against it; surfaceable matches appear at `GET /api/matches`.
 
 ## Tests
 
