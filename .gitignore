@@ -14,3 +14,4 @@ frontend/dist/
 frontend/.vitest-cache/
 frontend/test-results/
 frontend/playwright-report/
+backend/app/src/main/resources/static/
