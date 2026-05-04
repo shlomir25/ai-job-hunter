@@ -15,16 +15,18 @@ class SourceConfigSeeder(private val sources: JobSourceRepository) : Application
 
   override fun run(args: ApplicationArguments?) {
     val seeds = listOf(
-      "IMAP_LINKEDIN_ALERTS" to """{"fromFilter":"@linkedin.com","folder":"INBOX"}""",
-      "IMAP_INDEED_ALERTS" to """{"fromFilter":"@indeed.com","folder":"INBOX"}""",
-      "IMAP_GLASSDOOR_ALERTS" to """{"fromFilter":"@glassdoor.com","folder":"INBOX"}""",
+      Triple("IMAP_LINKEDIN_ALERTS", SourceType.IMAP, """{"fromFilter":"@linkedin.com","folder":"INBOX"}"""),
+      Triple("IMAP_INDEED_ALERTS", SourceType.IMAP, """{"fromFilter":"@indeed.com","folder":"INBOX"}"""),
+      Triple("IMAP_GLASSDOOR_ALERTS", SourceType.IMAP, """{"fromFilter":"@glassdoor.com","folder":"INBOX"}"""),
+      Triple("SCRAPER_ALLJOBS", SourceType.SCRAPER, """{"url":"https://www.alljobs.co.il/SearchResultsGuest.aspx"}"""),
+      Triple("SCRAPER_JOBMASTER", SourceType.SCRAPER, """{"url":"https://www.jobmaster.co.il/jobs/"}"""),
     )
-    for ((code, config) in seeds) {
+    for ((code, type, config) in seeds) {
       if (sources.findByCode(code) == null) {
         sources.save(
           JobSource(
             code = code,
-            type = SourceType.IMAP,
+            type = type,
             enabled = true,
             config = config,
           ),

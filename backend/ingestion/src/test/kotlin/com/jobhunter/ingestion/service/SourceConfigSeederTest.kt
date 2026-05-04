@@ -11,14 +11,16 @@ class SourceConfigSeederTest : AbstractRepositoryTest() {
   @Autowired lateinit var sources: JobSourceRepository
 
   @Test
-  fun `seed creates three IMAP sources when none exist`() {
+  fun `seed creates IMAP and scraper sources when none exist`() {
     val seeder = SourceConfigSeeder(sources)
     seeder.run(null)
     val codes = sources.findAll().map { it.code }.toSet()
     assertTrue(codes.contains("IMAP_LINKEDIN_ALERTS"))
     assertTrue(codes.contains("IMAP_INDEED_ALERTS"))
     assertTrue(codes.contains("IMAP_GLASSDOOR_ALERTS"))
-    assertEquals(3, codes.size)
+    assertTrue(codes.contains("SCRAPER_ALLJOBS"))
+    assertTrue(codes.contains("SCRAPER_JOBMASTER"))
+    assertEquals(5, codes.size)
   }
 
   @Test
@@ -26,6 +28,6 @@ class SourceConfigSeederTest : AbstractRepositoryTest() {
     val seeder = SourceConfigSeeder(sources)
     seeder.run(null)
     seeder.run(null)
-    assertEquals(3L, sources.count())
+    assertEquals(5L, sources.count())
   }
 }

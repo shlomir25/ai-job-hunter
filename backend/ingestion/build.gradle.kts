@@ -21,6 +21,7 @@ dependencies {
   implementation("jakarta.mail:jakarta.mail-api:2.1.3")
   implementation("org.eclipse.angus:angus-mail:2.0.3")
   implementation("org.jsoup:jsoup:1.18.3")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("io.github.oshai:kotlin-logging-jvm:7.0.0")
