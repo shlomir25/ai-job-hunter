@@ -1,0 +1,17 @@
+import { Link } from 'react-router-dom'
+
+export default function MatchCard({ match }) {
+  const { posting, llmScore, cosineSimilarity, id } = match
+  return (
+    <div className="match-card">
+      <h3>
+        <Link to={`/matches/${id}`}>{posting.title || '(no title)'}</Link>
+      </h3>
+      <div>{posting.company || '(unknown company)'} · {posting.location || ''}</div>
+      <div className="score">
+        Score: {llmScore ?? '—'} · cosine: {cosineSimilarity?.toFixed(2)} ·
+        {posting.contactEmail ? ` ✉ ${posting.contactEmail}` : ' no email'}
+      </div>
+    </div>
+  )
+}
