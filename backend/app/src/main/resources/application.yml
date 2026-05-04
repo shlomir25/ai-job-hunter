@@ -21,6 +21,9 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  mail:
+    host: localhost
+    port: 25
   ai:
     ollama:
       base-url: http://localhost:11434
@@ -43,6 +46,9 @@ management:
   endpoint:
     health:
       show-details: always
+  health:
+    mail:
+      enabled: false
 
 jobhunter:
   monitored-categories:
@@ -54,6 +60,9 @@ jobhunter:
   matching:
     cosine-threshold: 0.40
     llm-score-threshold: 60
+  delivery:
+    from-address: ""
+    candidate-name: "Candidate"
 
 logging:
   level:

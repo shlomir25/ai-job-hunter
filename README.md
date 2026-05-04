@@ -13,6 +13,7 @@ ai-job-hunter/
 │   ├── ingestion/    # IMAP source + alert-email parsers (LinkedIn / Indeed / Glassdoor)
 │   ├── processing/   # parse / classify / embed workers; queue listener
 │   ├── matching/     # CV upload, structured summary, two-stage matching worker
+│   ├── delivery/     # cover letter drafts, SMTP send, audit trail
 │   └── app/          # @SpringBootApplication, REST endpoints, health, scheduling
 ├── docker-compose.yml
 └── docs/superpowers/{specs,plans}/
@@ -45,6 +46,35 @@ curl -X POST -F "file=@cv.pdf" -F "label=default" http://localhost:8080/api/cv
 ```
 
 The first upload becomes the active CV. Each subsequent upload deactivates the previous active CV (history is preserved). Once an active CV exists, the `MatchWorker` will score `EMBEDDED` postings against it; surfaceable matches appear at `GET /api/matches`.
+
+## Sending CVs
+
+The send flow is intentionally two-step:
+
+1. `POST /api/matches/{id}/draft` — generates a cover letter (in the posting's language). Returns subject + body.
+2. `POST /api/matches/{id}/send` — body `{"subject": "...", "body": "..."}` (optional overrides; otherwise uses the saved draft). Sends via SMTP and writes `email_send_record`.
+3. `POST /api/matches/{id}/skip` — dismiss without sending.
+
+There is **no auto-retry on send failure** by design (per spec §8.4). On failure, the match transitions to `SEND_FAILED`; you decide whether to retry, edit, or skip.
+
+Configure SMTP in `application-local.yml`:
+
+```yaml
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your.email@gmail.com
+    password: your-google-app-password
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+jobhunter:
+  delivery:
+    from-address: your.email@gmail.com
+    candidate-name: Your Name
+```
 
 ## Tests
 
