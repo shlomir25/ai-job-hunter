@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { server, http, HttpResponse } from '../test-setup.js'
-import Dashboard from '../pages/Dashboard.jsx'
+import { server, http, HttpResponse } from '../test-setup.ts'
+import Dashboard from '../pages/Dashboard.tsx'
 
 describe('Dashboard', () => {
   it('renders queue counts', async () => {

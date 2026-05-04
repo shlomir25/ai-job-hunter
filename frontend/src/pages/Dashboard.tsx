@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
-import { getDashboard } from '../api/client.js'
+import { getDashboard } from '../api/client.ts'
+import type { QueueCounts } from '../api/types.ts'
 
 export default function Dashboard() {
-  const [counts, setCounts] = useState(null)
-  const [error, setError] = useState(null)
+  const [counts, setCounts] = useState<QueueCounts | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    getDashboard().then(setCounts).catch(e => setError(e.message))
+    getDashboard().then(setCounts).catch((e: Error) => setError(e.message))
   }, [])
 
   if (error) return <div>Error: {error}</div>

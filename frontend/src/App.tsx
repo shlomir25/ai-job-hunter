@@ -1,8 +1,8 @@
 import { Link, Route, Routes } from 'react-router-dom'
-import ReviewQueue from './pages/ReviewQueue.jsx'
-import MatchDetail from './pages/MatchDetail.jsx'
-import CvUpload from './pages/CvUpload.jsx'
-import Dashboard from './pages/Dashboard.jsx'
+import ReviewQueue from './pages/ReviewQueue.tsx'
+import MatchDetail from './pages/MatchDetail.tsx'
+import CvUpload from './pages/CvUpload.tsx'
+import Dashboard from './pages/Dashboard.tsx'
 
 export default function App() {
   return (

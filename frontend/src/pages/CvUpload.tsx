@@ -1,23 +1,24 @@
 import { useEffect, useState } from 'react'
-import { listCvs, uploadCv } from '../api/client.js'
+import { listCvs, uploadCv } from '../api/client.ts'
+import type { CvListItem } from '../api/types.ts'
 
 export default function CvUpload() {
-  const [cvs, setCvs] = useState([])
-  const [file, setFile] = useState(null)
+  const [cvs, setCvs] = useState<CvListItem[]>([])
+  const [file, setFile] = useState<File | null>(null)
   const [label, setLabel] = useState('default')
   const [busy, setBusy] = useState(false)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   const refresh = async () => setCvs(await listCvs())
 
-  useEffect(() => { refresh().catch(e => setError(e.message)) }, [])
+  useEffect(() => { refresh().catch((e: Error) => setError(e.message)) }, [])
 
   const onUpload = async () => {
     if (!file) return
     setBusy(true)
     setError(null)
     try { await uploadCv(file, label); setFile(null); await refresh() }
-    catch (e) { setError(e.message) }
+    catch (e) { setError((e as Error).message) }
     finally { setBusy(false) }
   }
 
@@ -30,7 +31,7 @@ export default function CvUpload() {
           <input
             type="file"
             accept=".pdf,.docx"
-            onChange={e => setFile(e.target.files[0] || null)}
+            onChange={e => setFile(e.target.files?.[0] ?? null)}
           />
         </label>
         <label style={{ marginLeft: '1rem' }}>

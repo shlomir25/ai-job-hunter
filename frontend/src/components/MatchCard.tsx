@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom'
+import type { MatchView } from '../api/types.ts'
 
-export default function MatchCard({ match }) {
+interface Props {
+  match: MatchView
+}
+
+export default function MatchCard({ match }: Props) {
   const { posting, llmScore, cosineSimilarity, id } = match
   return (
     <div className="match-card">

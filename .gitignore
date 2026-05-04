@@ -14,4 +14,5 @@ frontend/dist/
 frontend/.vitest-cache/
 frontend/test-results/
 frontend/playwright-report/
+frontend/*.tsbuildinfo
 backend/app/src/main/resources/static/

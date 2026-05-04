@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
-import { server, http, HttpResponse } from '../test-setup.js'
-import MatchDetail from '../pages/MatchDetail.jsx'
+import { server, http, HttpResponse } from '../test-setup.ts'
+import MatchDetail from '../pages/MatchDetail.tsx'
 
-const renderAt = (id) => render(
+const renderAt = (id: number) => render(
   <MemoryRouter initialEntries={[`/matches/${id}`]}>
     <Routes><Route path="/matches/:id" element={<MatchDetail />} /></Routes>
   </MemoryRouter>,
@@ -40,7 +40,7 @@ describe('MatchDetail', () => {
   })
 
   it('clicking Send posts subject + body', async () => {
-    let captured
+    let captured: unknown
     server.use(
       http.get('/api/matches/1', () => HttpResponse.json({
         id: 1, posting: { title: 'Backend', contactEmail: 'jobs@acme.com' },

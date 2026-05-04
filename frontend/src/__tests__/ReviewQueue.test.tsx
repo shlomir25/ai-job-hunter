@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { server, http, HttpResponse } from '../test-setup.js'
-import ReviewQueue from '../pages/ReviewQueue.jsx'
+import { server, http, HttpResponse } from '../test-setup.ts'
+import ReviewQueue from '../pages/ReviewQueue.tsx'
 
 describe('ReviewQueue', () => {
   it('renders the loading state initially', () => {

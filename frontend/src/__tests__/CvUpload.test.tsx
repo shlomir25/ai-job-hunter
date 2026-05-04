@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { server, http, HttpResponse } from '../test-setup.js'
-import CvUpload from '../pages/CvUpload.jsx'
+import { server, http, HttpResponse } from '../test-setup.ts'
+import CvUpload from '../pages/CvUpload.tsx'
 
 describe('CvUpload', () => {
   it('shows existing CVs', async () => {

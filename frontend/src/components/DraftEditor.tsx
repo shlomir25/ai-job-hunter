@@ -1,6 +1,14 @@
 import { useState } from 'react'
+import type { DraftedEmail, SendRequest } from '../api/types.ts'
 
-export default function DraftEditor({ initial, onSend, onCancel, sending }) {
+interface Props {
+  initial: DraftedEmail
+  onSend: (payload: SendRequest) => void
+  onCancel: () => void
+  sending: boolean
+}
+
+export default function DraftEditor({ initial, onSend, onCancel, sending }: Props) {
   const [subject, setSubject] = useState(initial.subject)
   const [body, setBody] = useState(initial.body)
   return (

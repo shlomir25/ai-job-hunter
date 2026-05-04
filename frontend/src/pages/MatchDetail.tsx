@@ -1,55 +1,66 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getMatch, draftMatch, sendMatch, skipMatch } from '../api/client.js'
-import DraftEditor from '../components/DraftEditor.jsx'
+import { getMatch, draftMatch, sendMatch, skipMatch } from '../api/client.ts'
+import DraftEditor from '../components/DraftEditor.tsx'
+import type { DraftedEmail, MatchView, SendRequest } from '../api/types.ts'
+
+interface Reasoning {
+  strengths?: string[]
+  gaps?: string[]
+  summary?: string
+}
 
 export default function MatchDetail() {
-  const { id } = useParams()
+  const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [match, setMatch] = useState(null)
-  const [error, setError] = useState(null)
-  const [draft, setDraft] = useState(null)
+  const [match, setMatch] = useState<MatchView | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [draft, setDraft] = useState<DraftedEmail | null>(null)
   const [drafting, setDrafting] = useState(false)
   const [sending, setSending] = useState(false)
 
   useEffect(() => {
+    if (!id) return
     let cancelled = false
     getMatch(id)
       .then(m => { if (!cancelled) setMatch(m) })
-      .catch(e => { if (!cancelled) setError(e.message) })
+      .catch((e: Error) => { if (!cancelled) setError(e.message) })
     return () => { cancelled = true }
   }, [id])
 
   const onDraft = async () => {
+    if (!id) return
     setDrafting(true)
     setError(null)
     try { setDraft(await draftMatch(id)) }
-    catch (e) { setError(e.message) }
+    catch (e) { setError((e as Error).message) }
     finally { setDrafting(false) }
   }
 
-  const onSend = async ({ subject, body }) => {
+  const onSend = async ({ subject, body }: SendRequest) => {
+    if (!id) return
     setSending(true)
     setError(null)
     try {
       await sendMatch(id, { subject, body })
       navigate('/')
     } catch (e) {
-      setError(e.message)
+      setError((e as Error).message)
       setSending(false)
     }
   }
 
   const onSkip = async () => {
+    if (!id) return
     if (!confirm('Skip this match?')) return
     try { await skipMatch(id); navigate('/') }
-    catch (e) { setError(e.message) }
+    catch (e) { setError((e as Error).message) }
   }
 
   if (error) return <div>Error: {error}</div>
   if (!match) return <div>Loading…</div>
 
-  const reasoning = match.reasoning ? JSON.parse(match.reasoning) : null
+  const reasoning: Reasoning | null = match.reasoning ? JSON.parse(match.reasoning) : null
 
   return (
     <div>

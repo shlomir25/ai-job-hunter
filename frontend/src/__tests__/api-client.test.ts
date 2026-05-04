@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { server, http, HttpResponse } from '../test-setup.js'
+import { server, http, HttpResponse } from '../test-setup.ts'
 import {
   listMatches,
   getMatch,
@@ -9,7 +9,7 @@ import {
   listCvs,
   uploadCv,
   getDashboard,
-} from '../api/client.js'
+} from '../api/client.ts'
 
 describe('api client', () => {
   it('listMatches returns array of matches', async () => {
@@ -34,7 +34,7 @@ describe('api client', () => {
   })
 
   it('sendMatch posts subject and body', async () => {
-    let receivedBody
+    let receivedBody: unknown
     server.use(http.post('/api/matches/9/send', async ({ request }) => {
       receivedBody = await request.json()
       return new HttpResponse(null, { status: 200 })
