@@ -9,3 +9,8 @@ logs/
 *.log
 backend/app/src/main/resources/application-local.yml
 backend/*/build/
+frontend/node_modules/
+frontend/dist/
+frontend/.vitest-cache/
+frontend/test-results/
+frontend/playwright-report/
